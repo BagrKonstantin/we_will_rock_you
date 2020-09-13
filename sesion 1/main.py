@@ -48,6 +48,3 @@ def load_tech_cards(filename):
             else:
                 print(i[1].value, i[2].value, "is wrong")
     con.commit()
-
-
-# load_details("Комплектующие.xlsx")
