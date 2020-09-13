@@ -19,9 +19,10 @@ def load_drones(filename):
     wb1 = load_workbook(filename=filename)['Лист1']
     data = [i for i in wb1]
     for i in data[1:]:
-        print(type(i[2].value))
-        if type(i[2].value) == float:
+        if str(i[2].value).isdigit():
             cur.execute("""INSERT into drones (title, price) values (?, ?)""", (i[1].value, i[2].value))
+        else:
+            print(i[1].value, i[2].value, "is wrong")
 
     con.commit()
 
