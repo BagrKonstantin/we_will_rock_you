@@ -6,8 +6,12 @@ import time
 
 class Loader(QMainWindow, Ui_MainWindow):
     def __init__(self):
-        super(Loader, self).__init__()
+        #super(Loader, self).__init__()
+        #self.setupUi(self)
+
+        super().__init__()
         self.setupUi(self)
+
         self.setWindowTitle('Window 1')
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setRowCount(3)
