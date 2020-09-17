@@ -36,7 +36,6 @@ class Loader(QMainWindow, Ui_MainWindow):
             for i in self.cur.execute("""Select title from details""").fetchall():
                 for j in i:
                     self.list_of_details.append(j)
-            self.list_of_details.insert(0, '')
         except Exception as e:
             print(e)
         for i in self.cur.execute("""Select title from details""").fetchall():
@@ -105,7 +104,6 @@ class Loader(QMainWindow, Ui_MainWindow):
                 supply.append(
                     [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
 
-        self.cur.execute("""Insert into amount_details (count,) """)
 
         print(supply)
         print("recording was successful")
