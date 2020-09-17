@@ -116,7 +116,7 @@ class Loader(QMainWindow, Ui_MainWindow):
         else:
             if self.spinBox.value() > 0:
                 self.tableWidget.setRowCount(self.spinBox.value())
-                for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
+                for i in range(self.tableWidget.rowCount(), self.spinBox.value()):
                     self.add_row(i)
 
     def ptint(self):
@@ -151,10 +151,10 @@ class Loader(QMainWindow, Ui_MainWindow):
             self.tableWidget.setItem(i, 1, QTableWidgetItem())
             self.tableWidget.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
 
-    def add(self):
-        self.tableWidget.setRowCount(self.tableWidget.rowCount())
-        self.add_row(self.tableWidget.rowCount() - 1)
-        self.tableWidget.Stretch()
+    # def add(self):
+    #     self.tableWidget.setRowCount(self.tableWidget.rowCount())
+    #     self.add_row(self.tableWidget.rowCount() - 1)
+    #     self.tableWidget.Stretch()
 
     def check(self):
         # self.ProgressBar.show()
