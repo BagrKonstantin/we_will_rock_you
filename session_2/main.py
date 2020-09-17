@@ -1,4 +1,4 @@
-from test import Ui_MainWindow
+from session_2.ui_session2 import Ui_MainWindow
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets, QtGui, QtCore
 import sqlite3
@@ -6,10 +6,10 @@ import time
 
 
 class Loader(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, path):
         super(Loader, self).__init__()
         self.setupUi(self)
-        self.setWindowTitle('Window 1')
+        self.setWindowTitle('Window 2')
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setRowCount(1)
         self.tableWidget.setHorizontalHeaderLabels(["Комплектующие", "Серийник", "Колличесиво"])
@@ -27,11 +27,18 @@ class Loader(QMainWindow, Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.write)
 
         # получаем данные из бд
-        self.con = sqlite3.connect("../nti_base.db")
+        self.con = sqlite3.connect(path)
         self.cur = self.con.cursor()
 
         # это названия комплектующих
         self.list_of_details = []
+        try:
+            for i in self.cur.execute("""Select title from details""").fetchall():
+                for j in i:
+                    self.list_of_details.append(j)
+            self.list_of_details.insert(0, '')
+        except Exception as e:
+            print(e)
         for i in self.cur.execute("""Select title from details""").fetchall():
             for j in i:
                 self.list_of_details.append(j)
@@ -198,6 +205,6 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    mainWindow = Loader()
+    mainWindow = Loader("../nti_base.db")
     mainWindow.show()
     sys.exit(app.exec())

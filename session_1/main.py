@@ -2,8 +2,8 @@ from openpyxl import load_workbook
 import sqlite3
 
 
-def load_details(filename):
-    con = sqlite3.connect("../nti_base.db")
+def load_details(filename, path):
+    con = sqlite3.connect(path)
     cur = con.cursor()
     wb1 = load_workbook(filename=filename)['Лист1']
     data = [i for i in wb1]
@@ -13,8 +13,8 @@ def load_details(filename):
     con.commit() 
 
 
-def load_drones(filename):
-    con = sqlite3.connect("../nti_base.db")
+def load_drones(filename, path):
+    con = sqlite3.connect(path)
     cur = con.cursor()
     wb1 = load_workbook(filename=filename)['Лист1']
     data = [i for i in wb1]
@@ -27,8 +27,8 @@ def load_drones(filename):
     con.commit()
 
 
-def load_tech_cards(filename):
-    con = sqlite3.connect("../nti_base.db")
+def load_tech_cards(filename, path):
+    con = sqlite3.connect(path)
     cur = con.cursor()
     wb1 = load_workbook(filename=filename)['Лист1']
     data = [i for i in wb1]
