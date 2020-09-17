@@ -108,16 +108,16 @@ class Loader(QMainWindow, Ui_MainWindow):
         print(supply)
         print("recording was successful")
 
-    # избавился от self.n
     def lines(self):
-        if self.tableWidget.rowCount() < self.spinBox.value():
+        if self.tableWidget.rowCount() < self.spinBox.value() and self.spinBox.value() != 0:
             self.tableWidget.setRowCount(self.spinBox.value())
             for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
                 self.add_row(i)
         else:
-            self.tableWidget.setRowCount(self.spinBox.value())
-            for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
-                self.add_row(i)
+            if self.spinBox.value() > 0:
+                self.tableWidget.setRowCount(self.spinBox.value())
+                for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
+                    self.add_row(i)
 
     def ptint(self):
         print(1)
