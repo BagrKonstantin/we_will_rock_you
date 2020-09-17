@@ -192,8 +192,12 @@ class Loader(QMainWindow, Ui_MainWindow):
                     self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
                     return
             else:
-                supply.append(
-                    [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+                if self.tableWidget.item(i, 2).text():
+                    supply.append(
+                        [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+                else:
+                    self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
+                    return
 
         print(supply)
         print("all is fine")
