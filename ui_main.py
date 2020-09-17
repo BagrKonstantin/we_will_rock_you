@@ -22,21 +22,32 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.pushButton_3 = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.verticalLayout.addWidget(self.pushButton_3)
+
+
+
+        self.pushButton_1 = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.pushButton_1.setObjectName("pushButton_1")
+        self.verticalLayout.addWidget(self.pushButton_1)
+
         self.pushButton_2 = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.pushButton_2.setObjectName("pushButton_2")
         self.verticalLayout.addWidget(self.pushButton_2)
-        self.pushButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
+
+        self.pushButton_3 = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.verticalLayout.addWidget(self.pushButton_3)
+
+
         self.pushButton_4 = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.pushButton_4.setObjectName("pushButton_4")
         self.verticalLayout.addWidget(self.pushButton_4)
+
+
+
         self.pushButton_5 = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.pushButton_5.setObjectName("pushButton_5")
         self.verticalLayout.addWidget(self.pushButton_5)
+
         self.pushButton_6 = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.pushButton_6.setObjectName("pushButton_6")
         self.verticalLayout.addWidget(self.pushButton_6)
@@ -61,9 +72,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton_3.setText(_translate("MainWindow", "Session 1"))
+        self.pushButton_1.setText(_translate("MainWindow", "Session 1"))
         self.pushButton_2.setText(_translate("MainWindow", "Session 2"))
-        self.pushButton.setText(_translate("MainWindow", "Session 3"))
+        self.pushButton_3.setText(_translate("MainWindow", "Session 3"))
         self.pushButton_4.setText(_translate("MainWindow", "Session 4"))
         self.pushButton_5.setText(_translate("MainWindow", "Session 5"))
         self.pushButton_6.setText(_translate("MainWindow", "Session 6"))
