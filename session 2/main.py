@@ -11,7 +11,7 @@ class Loader(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Window 1')
         self.tableWidget.setColumnCount(3)
-        self.tableWidget.setRowCount(3)
+        self.tableWidget.setRowCount(1)
         self.tableWidget.setHorizontalHeaderLabels(["Комплектующие", "Серийник", "Колличесиво"])
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
@@ -19,7 +19,7 @@ class Loader(QMainWindow, Ui_MainWindow):
 
         # self.tableWidget
 
-        self.spinBox.setValue(3)
+        self.spinBox.setValue(1)
         self.spinBox.valueChanged.connect(self.lines)
         # self.ProgressBar.hide()
 
@@ -36,6 +36,7 @@ class Loader(QMainWindow, Ui_MainWindow):
             for j in i:
                 self.list_of_details.append(j)
         self.list_of_details.insert(0, '')
+        print(self.list_of_details)
 
         # это названия акамуляторов
         self.list_of_akb = []
@@ -44,12 +45,15 @@ class Loader(QMainWindow, Ui_MainWindow):
             for j in i:
                 self.list_of_akb.append(j)
 
+        # это кол-во деталей на складе
+        self.amount_of_details = []
+        for i in self.cur.execute("""select * from amount_details""").fetchall():
+            for j in i:
+                self.amount_of_details.append(j)
+        print(self.amount_of_details)
         #######################
 
-        self.n = 3
-
-        for i in range(3):
-            self.add_row(i)
+        self.add_row(0)
 
         # self.tableWidget.cellWidget.currentTextChanged.connect(self.ptint)
 
@@ -74,19 +78,41 @@ class Loader(QMainWindow, Ui_MainWindow):
     #     self.ProgressBar.setValue(self.step)
 
     def write(self):
-        print("writing..")
+        supply = []
 
+        # проверка на правильность заполнения таблицы
+        for i in range(self.tableWidget.rowCount()):
+            if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
+                if self.tableWidget.item(i, 1).text():
+                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
+                    if self.tableWidget.item(i, 2).text() == "1":
+                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+                        supply.append([self.tableWidget.item(i, 0).text(), 1])
+                    else:
+                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
+                        return
+                else:
+                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
+                    return
+            else:
+                supply.append(
+                    [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+
+        self.cur.execute("""Insert into amount_details (count,) """)
+
+        print(supply)
+        print("recording was successful")
+
+    # избавился от self.n
     def lines(self):
-        if self.n < self.spinBox.value():
+        if self.tableWidget.rowCount() < self.spinBox.value():
             self.tableWidget.setRowCount(self.spinBox.value())
-            for i in range(self.n, self.spinBox.value()):
+            for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
                 self.add_row(i)
         else:
             self.tableWidget.setRowCount(self.spinBox.value())
-            for i in range(self.n, self.spinBox.value()):
+            for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
                 self.add_row(i)
-
-        self.n = self.spinBox.value()
 
     def ptint(self):
         print(1)
@@ -107,7 +133,6 @@ class Loader(QMainWindow, Ui_MainWindow):
 
         # заполняем выпадающее меню
         comboBox.addItems(self.list_of_details)
-        #################
 
         self.tableWidget.setCellWidget(i, 0, comboBox)
         self.tableWidget.cellWidget(i, 0).currentTextChanged.connect(lambda: self.unlock(i))
@@ -122,10 +147,8 @@ class Loader(QMainWindow, Ui_MainWindow):
             self.tableWidget.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
 
     def add(self):
-        self.n += 1
-
-        self.tableWidget.setRowCount(self.n)
-        self.add_row(self.n - 1)
+        self.tableWidget.setRowCount(self.tableWidget.rowCount())
+        self.add_row(self.tableWidget.rowCount() - 1)
         self.tableWidget.Stretch()
 
     def check(self):
@@ -140,16 +163,20 @@ class Loader(QMainWindow, Ui_MainWindow):
         # else:
         #     return
 
-
-        for i in range(self.n):
+        supply = []
+        # проверка на правильность заполнения таблицы
+        for i in range(self.tableWidget.rowCount()):  # заменил переменную на атрибут объекта
             if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
                 print(1)
                 if self.tableWidget.item(i, 1).text():
                     self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
                     if self.tableWidget.item(i, 2).text() == "1":
                         self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+
                         print(self.tableWidget.cellWidget(i, 0).currentText(), self.tableWidget.item(i, 1).text(),
                               self.tableWidget.item(i, 2).text(), "Штука")
+
+                        supply.append([self.tableWidget.item(i, 0).text(), 1])
 
 
                     else:
@@ -157,12 +184,13 @@ class Loader(QMainWindow, Ui_MainWindow):
                         return
 
                 else:
-
                     self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
                     return
             else:
-                pass
-                # print("not_battery")
+                supply.append(
+                    [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+
+        print(supply)
         print("all is fine")
 
 
