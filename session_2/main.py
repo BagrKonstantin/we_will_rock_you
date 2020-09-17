@@ -109,7 +109,7 @@ class Loader(QMainWindow, Ui_MainWindow):
         print("recording was successful")
 
     def lines(self):
-        if self.tableWidget.rowCount() < self.spinBox.value() and self.spinBox.value() != 0:
+        if (self.tableWidget.rowCount() < self.spinBox.value()) and self.spinBox.value() != 0:
             self.tableWidget.setRowCount(self.spinBox.value())
             for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
                 self.add_row(i)
