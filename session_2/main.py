@@ -5,9 +5,9 @@ import sqlite3
 import time
 
 
-class Loader(QMainWindow, Ui_MainWindow):
+class UI_Session2(QMainWindow, Ui_MainWindow):
     def __init__(self, path):
-        super(Loader, self).__init__()
+        super(UI_Session2, self).__init__()
         self.setupUi(self)
         self.setWindowTitle('Window 2')
         self.tableWidget.setColumnCount(3)
@@ -20,6 +20,7 @@ class Loader(QMainWindow, Ui_MainWindow):
         # self.tableWidget
 
         self.spinBox.setValue(1)
+        self.spinBox.setMinimum(1)
         self.spinBox.valueChanged.connect(self.lines)
         # self.ProgressBar.hide()
 
@@ -208,6 +209,6 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    mainWindow = Loader("../nti_base.db")
+    mainWindow = UI_Session2("../nti_base.db")
     mainWindow.show()
     sys.exit(app.exec())

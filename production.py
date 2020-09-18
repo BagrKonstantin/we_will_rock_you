@@ -36,7 +36,7 @@ class Main_Window(QMainWindow, Ui_MainWindow):
 
     def second(self):
         print(2)
-        self.second_window = second_session.Loader(self.path)
+        self.second_window = second_session.UI_Session2(self.path)
         self.second_window.show()
 
     def third(self):
