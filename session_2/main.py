@@ -84,29 +84,30 @@ class Loader(QMainWindow, Ui_MainWindow):
     #     self.ProgressBar.setValue(self.step)
 
     def write(self):
-        supply = []
-
-        # проверка на правильность заполнения таблицы
-        for i in range(self.tableWidget.rowCount()):
-            if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
-                if self.tableWidget.item(i, 1).text():
-                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
-                    if self.tableWidget.item(i, 2).text() == "1":
-                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
-                        supply.append([self.tableWidget.item(i, 0).text(), 1])
-                    else:
-                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
-                        return
-                else:
-                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
-                    return
-            else:
-                supply.append(
-                    [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
-
-
-        print(supply)
-        print("recording was successful")
+        print(self.check())
+        # supply = []
+        #
+        # # проверка на правильность заполнения таблицы
+        # for i in range(self.tableWidget.rowCount()):
+        #     if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
+        #         if self.tableWidget.item(i, 1).text():
+        #             self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
+        #             if self.tableWidget.item(i, 2).text() == "1":
+        #                 self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+        #                 supply.append([self.tableWidget.item(i, 0).text(), 1])
+        #             else:
+        #                 self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
+        #                 return
+        #         else:
+        #             self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
+        #             return
+        #     else:
+        #         supply.append(
+        #             [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+        #
+        #
+        # print(supply)
+        # print("recording was successful")
 
     def lines(self):
         if (self.tableWidget.rowCount() < self.spinBox.value()) and self.spinBox.value() != 0:
@@ -128,6 +129,7 @@ class Loader(QMainWindow, Ui_MainWindow):
         self.tableWidget.setItem(i, 2, QTableWidgetItem())
         # self.tableWidget.closePersistentEditor(self.tableWidget.item(i, 1))
         self.tableWidget.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
+        self.tableWidget.item(i, 1).setBackground(QtGui.QColor(120, 120, 120))
         # self.tableWidget.setItem(i, 1, QTableWidgetItem())
 
         # self.tableWidget.item(i, 1).setFlags(QtCore.Qt.Item)
@@ -170,37 +172,36 @@ class Loader(QMainWindow, Ui_MainWindow):
 
         supply = []
         # проверка на правильность заполнения таблицы
-        for i in range(self.tableWidget.rowCount()):  # заменил переменную на атрибут объекта
-            if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
-                print(1)
-                if self.tableWidget.item(i, 1).text():
-                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
-                    if self.tableWidget.item(i, 2).text() == "1":
-                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+        try:
+            for i in range(self.tableWidget.rowCount()):  # заменил переменную на атрибут объекта
+                if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
+                    if self.tableWidget.item(i, 1).text():
+                        if self.tableWidget.item(i, 2).text() == "1":
 
-                        print(self.tableWidget.cellWidget(i, 0).currentText(), self.tableWidget.item(i, 1).text(),
-                              self.tableWidget.item(i, 2).text(), "Штука")
+                            print(self.tableWidget.cellWidget(i, 0).currentText(), self.tableWidget.item(i, 1).text(),
+                                  self.tableWidget.item(i, 2).text(), "Штука")
 
-                        supply.append([self.tableWidget.item(i, 0).text(), 1])
-
+                            supply.append([self.tableWidget.cellWidget(i, 0).currentText(), 1])
+                        else:
+                            raise AttributeError
 
                     else:
-                        self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
-                        return
+                        raise AttributeError
 
-                else:
-                    self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
-                    return
-            else:
-                if self.tableWidget.item(i, 2).text():
-                    supply.append(
-                        [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
-                else:
-                    self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
-                    return
 
-        print(supply)
-        print("all is fine")
+                elif self.tableWidget.cellWidget(i, 0).currentText() != "":
+                    if self.tableWidget.item(i, 2).text() != "0":
+                        supply.append(
+                            [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
+                    else:
+                        raise AttributeError
+            return supply
+        except Exception as error:
+            print(error.__repr__())
+
+        # print(supply)
+        # print("all is fine")
+
 
 
 if __name__ == "__main__":
