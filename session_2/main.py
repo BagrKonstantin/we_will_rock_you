@@ -52,12 +52,6 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
             for j in i:
                 self.list_of_akb.append(j)
 
-        # это кол-во деталей на складе
-        self.amount_of_details = []
-        for i in self.cur.execute("""select * from amount_details""").fetchall():
-            for j in i:
-                self.amount_of_details.append(j)
-        print(self.amount_of_details)
         #######################
 
         self.add_row(0)
@@ -85,30 +79,13 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
     #     self.ProgressBar.setValue(self.step)
 
     def write(self):
-        print(self.check())
-        # supply = []
-        #
-        # # проверка на правильность заполнения таблицы
-        # for i in range(self.tableWidget.rowCount()):
-        #     if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
-        #         if self.tableWidget.item(i, 1).text():
-        #             self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 255, 255))
-        #             if self.tableWidget.item(i, 2).text() == "1":
-        #                 self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
-        #                 supply.append([self.tableWidget.item(i, 0).text(), 1])
-        #             else:
-        #                 self.tableWidget.item(i, 2).setBackground(QtGui.QColor(255, 0, 0))
-        #                 return
-        #         else:
-        #             self.tableWidget.item(i, 1).setBackground(QtGui.QColor(255, 0, 0))
-        #             return
-        #     else:
-        #         supply.append(
-        #             [self.tableWidget.cellWidget(i, 0).currentText(), int(self.tableWidget.item(i, 2).text())])
-        #
-        #
-        # print(supply)
-        # print("recording was successful")
+        for i in self.check():
+            id_detail = self.cur.execute("""select id from details where title='{}' """.format(i[0])).fetchall()
+            self.cur.execute(
+                """insert into amount_details (title, amount) values (?, ?)""", (id_detail[0][0], i[1]))
+
+        self.con.commit()
+        print("recording was successful")
 
     def lines(self):
         if (self.tableWidget.rowCount() < self.spinBox.value()) and self.spinBox.value() != 0:
@@ -202,7 +179,6 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
 
         # print(supply)
         # print("all is fine")
-
 
 
 if __name__ == "__main__":
