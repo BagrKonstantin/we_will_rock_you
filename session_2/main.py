@@ -82,11 +82,14 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
     #     self.step = self.step + 1
     #     self.ProgressBar.setValue(self.step)
 
-    def write(self):
+    def write(self): 
+        my_time = time.time()
+        self.cur.execute("""insert into entrance_details (date) values ( {} )""".format(my_time))
+        id_name = self.cur.execute("""select id from entrance_details where date = {}""".format(my_time)).fetchall()
         for i in self.check():
-            id_detail = self.cur.execute("""select id from details where title='{}' """.format(i[0])).fetchall()
-            self.cur.execute(
-                """insert into amount_details (title, amount) values (?, ?)""", (id_detail[0][0], i[1]))
+            self.cur.execute("""update details set amount = amount + ? where title = ?""", (i[1], i[0]))
+            self.cur.execute("""insert into information_about_entrance (id, detail, amount) values (?, ?, ?)""",
+                             (id_name[0][0], i[0], i[1]))
 
         self.con.commit()
         print("recording was successful")
@@ -178,6 +181,8 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error.__repr__())
 
+        print(time.time())
+        print(time.strftime("%d.%m.%Y", time.gmtime(time.time())))
         # print(supply)
         # print("all is fine")
 
