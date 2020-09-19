@@ -104,6 +104,10 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error)
 
+    def status_changed(self, row): # изменение статуса заказа отсылает сюда
+        print("check")
+        pass
+
     def update_orders(self):  # обновление таблицы заказов
         self.tableWidget_of_orders.setRowCount(len(self.list_of_orders))
         for i in range(len(self.list_of_orders)):
@@ -133,6 +137,8 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(
                 self.list_of_statuses.index(self.list_of_orders[i].state))
 
+            self.tableWidget_of_orders.cellWidget(i, 3).currentTextChanged.connect(lambda: self.status_changed(i))
+
             # self.tableWidget_of_orders.cellWidget(i, 0).currentTextChanged.connect(
             #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
             # self.tableWidget_of_orders.cellWidget(i, 2).valueChanged.connect(
@@ -148,8 +154,19 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
                 Order(3, int(time.time()), int(time.time()), "Идет сборка", self.label_price.text(),
                       self.comboBox.currentText()))
         print([i.get_info_for_orders_table() for i in self.list_of_orders])
-        self.swap("")
+        self.clean_order_table()
         self.update_orders()
+        self.swap("")
+
+    def clean_order_table(self):
+        self.lineEdit.clear()
+        self.lineEdit.setEnabled(False)
+        self.comboBox.setEnabled(True)
+        self.radioButton.setChecked(False)
+        self.spinBox.setValue(1)
+        self.add_row_to_order(0)
+        self.comboBox.setCurrentIndex(0)
+        self.label_price.setText("0")
 
     def lines(self):
         n = self.tableWidget_order.rowCount()
