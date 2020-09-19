@@ -7,6 +7,7 @@ import sys
 from session_1 import first_window as first_session
 from session_2 import main as second_session
 from session_3 import main as third_session
+from session_4 import main as forth_session
 
 
 class Main_Window(QMainWindow, Ui_MainWindow):
@@ -47,26 +48,22 @@ class Main_Window(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error)
 
-
     def fourth(self):
         print(4)
-
+        self.forth_window = forth_session.UI_Session4(self.path)
+        self.forth_window.show()
 
     def fifth(self):
         print(5)
 
-
     def sixth(self):
         print(6)
-
 
     def seventh(self):
         print(7)
 
-
     def eighth(self):
         print(8)
-
 
 
 if __name__ == "__main__":

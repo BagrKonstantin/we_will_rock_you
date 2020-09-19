@@ -10,6 +10,9 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         super(UI_Session2, self).__init__()
         self.setupUi(self)
         self.setWindowTitle('Window 2')
+
+        self.path = path
+
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setRowCount(1)
         self.tableWidget.setHorizontalHeaderLabels(["Комплектующие", "Серийник", "Колличесиво"])
@@ -28,7 +31,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.write)
 
         # получаем данные из бд
-        self.con = sqlite3.connect(path)
+        self.con = sqlite3.connect(self.path)
         self.cur = self.con.cursor()
 
         # это названия комплектующих
@@ -88,7 +91,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         print("recording was successful")
 
     def lines(self):
-        if (self.tableWidget.rowCount() < self.spinBox.value()) and self.spinBox.value() != 0:
+        if self.tableWidget.rowCount() < self.spinBox.value():
             self.tableWidget.setRowCount(self.spinBox.value())
             for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
                 self.add_row(i)
@@ -98,11 +101,8 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
                 for i in range(self.tableWidget.rowCount(), self.spinBox.value()):
                     self.add_row(i)
 
-    def ptint(self):
-        print(1)
-
     def add_row(self, i):
-        comboBox = QtWidgets.QComboBox()
+        combobox = QtWidgets.QComboBox()
         self.tableWidget.setItem(i, 1, QTableWidgetItem())
         self.tableWidget.setItem(i, 2, QTableWidgetItem())
         # self.tableWidget.closePersistentEditor(self.tableWidget.item(i, 1))
@@ -117,9 +117,9 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         # self.ProgressBar
 
         # заполняем выпадающее меню
-        comboBox.addItems(self.list_of_details)
+        combobox.addItems(self.list_of_details)
 
-        self.tableWidget.setCellWidget(i, 0, comboBox)
+        self.tableWidget.setCellWidget(i, 0, combobox)
         self.tableWidget.cellWidget(i, 0).currentTextChanged.connect(lambda: self.unlock(i))
 
         # self.tableWidget.setCellWidget(i, 2, spinbox)
@@ -133,7 +133,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
 
     # def add(self):
     #     self.tableWidget.setRowCount(self.tableWidget.rowCount())
-    #     self.add_row(self.tableWidget.rowCount() - 1)
+    #     self.add_row_to_order(self.tableWidget.rowCount() - 1)
     #     self.tableWidget.Stretch()
 
     def check(self):
