@@ -9,13 +9,13 @@ print(int(time.time()))
 def get_seconds(day, month, year):
     return time.mktime((year, month, day, 23, 59, 59, 0, 0, 0))
 
-class Order():
+class Order(): #класс в котором хранится информация о заказе(надо расширять)
     def __init__(self, num, creation_date, last_change_date, state, price, client_name, new_client=False):
-        self.num = num
+        self.num = num # 1 столбик
         self.creation_date = creation_date
         self.last_change_date = last_change_date
         self.state = state
-        self.price = price
+        self.price = price # столбик
 
         self.client_name = client_name
         self.new_client = new_client  # bool
@@ -30,6 +30,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Window 4')
 
+
         self.path = path
 
         self.swap("")
@@ -38,8 +39,8 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.lineEdit.setEnabled(False)
 
 
-        self.list_of_drones = ["", "Шура", "Антон", "Арамис"]
-        self.dict_of_drones = {"": 0, "Шура": 10000, "Антон": 12000, "Арамис": 15000}
+        self.list_of_drones = ["", "Шура", "Антон", "Арамис"] # бд сюда
+        self.dict_of_drones = {"": 0, "Шура": 10000, "Антон": 12000, "Арамис": 15000}# бд сюда
         self.tableWidget_of_orders.setHorizontalHeaderLabels(
             ["№ п.п.", "Дата создания", "Дата изменения состояния", "Состояние", "Общая сумма заявки"])
         self.tableWidget_order.setRowCount(1)
@@ -48,7 +49,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
 
 
         self.list_of_statuses = ["Создана", "Идет сборка", "Готова к отгрузке", "Запрошено разрешение у ФСБ",
-                                 "Анулирована", "Отгружена"]
+                                 "Анулирована", "Отгружена"]# бд сюда
 
         for i in range(3, 5):
             self.tableWidget_of_orders.horizontalHeader().setSectionResizeMode(i, QtWidgets.QHeaderView.Stretch)
@@ -64,15 +65,17 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.radioButton.clicked.connect(self.change_client)
 
         self.spinBox.setValue(1)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(1000)
         self.spinBox.valueChanged.connect(self.lines)
 
-        self.list_of_client_names = ["", "Костя", "Саня"]
+        self.list_of_client_names = ["", "Костя", "Саня"]# бд сюда
         self.comboBox.addItems(self.list_of_client_names)
 
-        self.list_of_orders = [Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"), Order(2, 1600505329, 1600505329, "Запрошено разрешение у ФСБ", 14000, "Петя", new_client=True)]
+        self.list_of_orders = [Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"), Order(2, 1600505329, 1600505329, "Запрошено разрешение у ФСБ", 14000, "Петя", new_client=True)]# бд сюда
         self.update_orders()
 
-    def update_orders(self):
+    def update_orders(self): # обновление таблицы заказов
         self.tableWidget_of_orders.setRowCount(len(self.list_of_orders))
         for i in range(len(self.list_of_orders)):
             combobox = QtWidgets.QComboBox()
@@ -105,30 +108,31 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
 
 
-    def create_order(self):
+    def create_order(self): #создание заказа
         if self.radioButton.isChecked():
-            self.list_of_orders.append(Order(3, int(time.time()), int(time.time()), "Запрошено разрешение у ФСБ", self.lcdNumber.intValue(), self.lineEdit.text(), new_client=True))
+            self.list_of_orders.append(Order(3, int(time.time()), int(time.time()), "Запрошено разрешение у ФСБ", self.label_price.text(), self.lineEdit.text(), new_client=True))
         else:
             self.list_of_orders.append(
-                Order(3, int(time.time()), int(time.time()), "Идет сборка", self.lcdNumber.intValue(), self.comboBox.currentText()))
+                Order(3, int(time.time()), int(time.time()), "Идет сборка", self.label_price.text(), self.comboBox.currentText()))
         print([i.get_info_for_orders_table() for i in self.list_of_orders])
         self.swap("")
         self.update_orders()
 
     def lines(self):
-        if (self.tableWidget_order.rowCount() < self.spinBox.value()) and self.spinBox.value() != 0:
+        n = self.tableWidget_order.rowCount()
+        if self.tableWidget_order.rowCount() < self.spinBox.value():
             self.tableWidget_order.setRowCount(self.spinBox.value())
-            for i in range(self.tableWidget_order.rowCount() - 1, self.spinBox.value()):
+            for i in range(n, self.spinBox.value()):
                 self.add_row_to_order(i)
         else:
-            if self.spinBox.value() > 0:
-                self.tableWidget_order.setRowCount(self.spinBox.value())
-                for i in range(self.tableWidget_order.rowCount(), self.spinBox.value()):
-                    self.add_row_to_order(i)
+            self.tableWidget_order.setRowCount(self.spinBox.value())
+            # for i in range(n + 1, self.spinBox.value() + 1):
+            #     self.add_row(i)
 
     def add_row_to_order(self, i):
         spinbox = QtWidgets.QSpinBox()
         spinbox.setMinimum(1)
+        spinbox.setMaximum(1000)
 
         combobox = QtWidgets.QComboBox()
         combobox.addItems(self.list_of_drones)
@@ -151,7 +155,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.tableWidget_order.item(i, 1).setText(
             str(self.dict_of_drones[name] * self.tableWidget_order.cellWidget(i, 2).value()))
         try:
-            self.lcdNumber.display(sum([int(self.tableWidget_order.item(i, 1).text()) for i in range(self.tableWidget_order.rowCount())]))
+            self.label_price.setText(str(sum([int(self.tableWidget_order.item(i, 1).text()) for i in range(self.tableWidget_order.rowCount())])))
         except Exception as error:
             print(error)
 
@@ -177,7 +181,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.comboBox.show()
             self.spinBox.show()
             self.label_2.show()
-            self.lcdNumber.show()
+            self.label_price.show()
 
         else:
             self.tableWidget_of_orders.show()
@@ -192,7 +196,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.comboBox.hide()
             self.spinBox.hide()
             self.label_2.hide()
-            self.lcdNumber.hide()
+            self.label_price.hide()
 
 
 if __name__ == "__main__":

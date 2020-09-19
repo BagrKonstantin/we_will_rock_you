@@ -24,6 +24,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
 
         self.spinBox.setValue(1)
         self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(1000)
         self.spinBox.valueChanged.connect(self.lines)
         # self.ProgressBar.hide()
 
@@ -91,15 +92,15 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         print("recording was successful")
 
     def lines(self):
+        n = self.tableWidget.rowCount()
         if self.tableWidget.rowCount() < self.spinBox.value():
             self.tableWidget.setRowCount(self.spinBox.value())
-            for i in range(self.tableWidget.rowCount() - 1, self.spinBox.value()):
+            for i in range(n, self.spinBox.value()):
                 self.add_row(i)
         else:
-            if self.spinBox.value() > 0:
-                self.tableWidget.setRowCount(self.spinBox.value())
-                for i in range(self.tableWidget.rowCount(), self.spinBox.value()):
-                    self.add_row(i)
+            self.tableWidget.setRowCount(self.spinBox.value())
+            # for i in range(n + 1, self.spinBox.value() + 1):
+            #     self.add_row(i)
 
     def add_row(self, i):
         combobox = QtWidgets.QComboBox()
@@ -107,7 +108,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         self.tableWidget.setItem(i, 2, QTableWidgetItem())
         # self.tableWidget.closePersistentEditor(self.tableWidget.item(i, 1))
         self.tableWidget.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
-        self.tableWidget.item(i, 1).setBackground(QtGui.QColor(120, 120, 120))
+        #self.tableWidget.item(i, 1).setBackground(QtGui.QColor(120, 120, 120))
         # self.tableWidget.setItem(i, 1, QTableWidgetItem())
 
         # self.tableWidget.item(i, 1).setFlags(QtCore.Qt.Item)
