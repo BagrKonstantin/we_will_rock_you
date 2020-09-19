@@ -32,14 +32,21 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Window 4')
 
-        self.path = path
+        self.con = sqlite3.connect(path)
+        self.cur = self.con.cursor()
 
         self.swap("")
 
         self.lineEdit.setEnabled(False)
 
-        self.list_of_drones = ["", "Шура", "Антон", "Арамис"]  # бд сюда
-        self.dict_of_drones = {"": 0, "Шура": 10000, "Антон": 12000, "Арамис": 15000}  # бд сюда
+        self.list_of_drones = [""]
+        self.dict_of_drones = {}
+        self.dict_of_drones[''] = 0
+
+        for i in self.cur.execute("""Select title, price  from drones""").fetchall():
+            self.list_of_drones.append(i[0])
+            self.dict_of_drones[i[0]] = i[1]
+
         self.tableWidget_of_orders.setHorizontalHeaderLabels(
             ["№ п.п.", "Дата создания", "Дата изменения состояния", "Состояние", "Общая сумма заявки"])
         self.tableWidget_order.setRowCount(1)
@@ -69,7 +76,9 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.spinBox.setMaximum(1000)
         self.spinBox.valueChanged.connect(self.lines)
 
-        self.list_of_client_names = ["", "Костя", "Саня"]  # бд сюда
+        self.list_of_client_names = [""]
+        for i in self.cur.execute("""select title from customers""").fetchall():
+            self.list_of_client_names.append(i[0])
         self.comboBox.addItems(self.list_of_client_names)
 
         self.list_of_orders = [Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"),
@@ -81,6 +90,15 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
                                      new_client=True),
                                Order(5, 1600205329, 1600205329, "Готова к отгрузке", 14000, "Слуга народа",
                                      new_client=True)]  # бд сюда
+
+        for i in self.cur.execute("""select * from applications""").fetchall():
+            date_creation = time.strftime("%d.%m.%Y", time.gmtime(i[1]))
+            general_status = time.strftime("%d.%m.%Y", time.gmtime(i[2]))
+            customer = self.cur.execute("""select title from customers where id = ?""", (i[3],)).fetchall()[0][0]
+            status = self.cur.execute("""select title from application_status where id = ?""", (i[5],)).fetchall()[0][0]
+
+            self.list_of_orders.append([i[0], date_creation, general_status, customer, status, i[6]])
+
         self.update_orders()
 
         self.t = 1
