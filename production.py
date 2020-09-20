@@ -55,6 +55,8 @@ class Main_Window(QMainWindow, Ui_MainWindow):
 
     def fifth(self):
         print(5)
+        self.forth_window = forth_session.UI_Session4(self.path)
+        self.forth_window.show()
 
     def sixth(self):
         print(6)

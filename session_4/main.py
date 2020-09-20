@@ -128,11 +128,10 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         try:
             # это пока не работает
             if self.tableWidget_of_orders.cellWidget(i, 3).currentText() == "Готова к отгрузке":
-                possible = False # possible хватает деталей на сборку
-                if possible: #
+                possible = False  # possible хватает деталей на сборку
+                if possible:  #
 
                     self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
-
 
                     print("update customers set status =(select id from application_status where title = {})".format())
                     # self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
@@ -141,7 +140,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
                     self.tableWidget_of_orders.cellWidget(i, 3).currentText()  # статус
                 else:
                     self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(
-                    self.list_of_statuses.index("Произвести сборку"))
+                        self.list_of_statuses.index(self.list_of_orders[i].state))
                     QMessageBox.critical(self, "Ошибка", "Недостаточно комплектующих\nНе хватает :", QMessageBox.Ok)
         except Exception as ex:
             print(ex)
@@ -180,11 +179,10 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.list_of_statuses.index(self.list_of_orders[i].state))
         self.tableWidget_of_orders.cellWidget(i, 3).currentTextChanged.connect(lambda: self.status_changed(i))
 
-
-            # self.tableWidget_of_orders.cellWidget(i, 0).currentTextChanged.connect(
-            #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
-            # self.tableWidget_of_orders.cellWidget(i, 2).valueChanged.connect(
-            #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
+        # self.tableWidget_of_orders.cellWidget(i, 0).currentTextChanged.connect(
+        #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
+        # self.tableWidget_of_orders.cellWidget(i, 2).valueChanged.connect(
+        #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
 
     def create_order(self):  # создание заказа
         if self.radioButton.isChecked():
