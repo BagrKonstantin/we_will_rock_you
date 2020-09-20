@@ -121,7 +121,13 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error)
 
-    def status_changed(self, row): # изменение статуса заказа отсылает сюда
+    def status_changed(self, i): # изменение статуса заказа отсылает сюда
+        self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
+
+
+        self.list_of_orders[i].num  #id по которому надо поменять статус в бд
+        self.tableWidget_of_orders.cellWidget(i, 3).currentText() #статус
+
         print("check")
         pass
 
