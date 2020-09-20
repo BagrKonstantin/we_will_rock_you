@@ -123,15 +123,19 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error)
 
-    def status_changed(self, row):  # изменение статуса заказа отсылает сюда
+    def status_changed(self, i):  # изменение статуса заказа отсылает сюда
+        try:
+            # передаётся значение только из самой последней строчки
+            self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
+            self.list_of_orders[i].num  # id по которому надо поменять статус в бд
+            self.tableWidget_of_orders.cellWidget(i, 3).currentText()  # статус
 
-        # передаётся значение только из самой последней строчки
-
-        print(row)
-        print("update customers set status =(select id from application_status where title = {})".format(
-                         self.tableWidget_of_orders.cellWidget(row, 3).currentText()))
-        # self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
-        #                          self.tableWidget_of_orders.cellWidget(row, 3).currentText()))
+            # print("update customers set status =(select id from application_status where title = {})".format(
+            #                  self.tableWidget_of_orders.cellWidget(i, 3).currentText()))
+            self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
+                                     self.tableWidget_of_orders.cellWidget(i, 3).currentText()))
+        except Exception as ex:
+            print(ex)
 
         print("check")
         pass
@@ -192,32 +196,11 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
                     self.tableWidget_order.cellWidget(i, 0).currentText()] = self.tableWidget_order.cellWidget(i,
                                                                                                                2).value()
 
-        item_list = [time.time(), client_name, shopping_dict, self.label_price.text(),
-                     self.radioButton.isChecked()]
-        print(item_list)
-        # добавляем заказ в бд
-        
-        # проверка покупателя
-        if item_list[4]:
-            self.cur.execute("insert into customers (title) values ( '{}' )".format(item_list[1]))
-            customer = self.cur.execute("select id from customers where title = ?", (item_list[1],)).fetchall()
-        else:
-            customer = self.cur.execute("""select id from customers where title = ?""", (item_list[1],)).fetchall()
+        print(time.time(), client_name, shopping_dict, self.label_price.text(), (not self.radioButton.isChecked()))
 
-        self.cur.execute(
-            """insert into applications
-             (date_creation, last_change_date, customer, status, total_cost) values (?, ?, ?, 1, ?)""",
-            (item_list[0], item_list[0], customer[0][0], item_list[3]))
+        print(shopping_dict)
 
-        id_application = self.cur.execute("""select id from applications where date_creation = ?""",
-                                          (item_list[0],)).fetchall()
 
-        # # добавление дронов в список покупок
-        for j in item_list[2]:
-            self.cur.execute("""insert into shoping_lists (id, drone, amount) values ( ?, ?, ? )""",
-                             (id_application[0][0], j, item_list[2][j]))
-
-        self.con.commit()
         self.clean_order_table()
         self.update_orders()
         self.swap("")
