@@ -109,16 +109,7 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         combobox = QtWidgets.QComboBox()
         self.tableWidget.setItem(i, 1, QTableWidgetItem())
         self.tableWidget.setItem(i, 2, QTableWidgetItem())
-        # self.tableWidget.closePersistentEditor(self.tableWidget.item(i, 1))
         self.tableWidget.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
-        #self.tableWidget.item(i, 1).setBackground(QtGui.QColor(120, 120, 120))
-        # self.tableWidget.setItem(i, 1, QTableWidgetItem())
-
-        # self.tableWidget.item(i, 1).setFlags(QtCore.Qt.Item)
-
-        # spinbox = QtWidgets.QSpinBox()
-
-        # self.ProgressBar
 
         # заполняем выпадающее меню
         combobox.addItems(self.list_of_details)
@@ -126,9 +117,9 @@ class UI_Session2(QMainWindow, Ui_MainWindow):
         self.tableWidget.setCellWidget(i, 0, combobox)
         self.tableWidget.cellWidget(i, 0).currentTextChanged.connect(lambda: self.unlock(i))
 
-        # self.tableWidget.setCellWidget(i, 2, spinbox)
 
     def unlock(self, i):
+        print(i)
         if self.tableWidget.cellWidget(i, 0).currentText() in self.list_of_akb:
             self.tableWidget.setItem(i, 1, QTableWidgetItem())
         else:

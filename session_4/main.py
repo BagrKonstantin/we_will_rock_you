@@ -53,7 +53,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.add_row_to_order(0)
         self.tableWidget_order.setHorizontalHeaderLabels(["Модель", "Цена", "Колличество"])
 
-        self.list_of_statuses = ["Создана", "Идет сборка", "Готова к отгрузке", "Запрошено разрешение у ФСБ",
+        self.list_of_statuses = ["Создана", "Идёт сборка", "Готова к отгрузке", "Запрошено разрешение у ФСБ",
                                  "Анулирована", "Отгружена", "Произвести сборку"]  # бд сюда
 
         for i in range(3, 5):
@@ -124,61 +124,62 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             print(error)
 
     def status_changed(self, i):  # изменение статуса заказа отсылает сюда
+        print(i)
         try:
             # это пока не работает
-    def status_changed(self, i): # изменение статуса заказа отсылает сюда
-        if self.tableWidget_of_orders.cellWidget(i, 3).currentText() == "Готова к отгрузке":
-            possible = False # possible хватает деталей на сборку
-            if possible: #
+            if self.tableWidget_of_orders.cellWidget(i, 3).currentText() == "Готова к отгрузке":
+                possible = False # possible хватает деталей на сборку
+                if possible: #
 
-                self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
+                    self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
 
 
-            print("update customers set status =(select id from application_status where title = {})".format())
-            # self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
-            #                          self.tableWidget_of_orders.cellWidget(i, 3).currentText()))
+                    print("update customers set status =(select id from application_status where title = {})".format())
+                    # self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
+                    #                          self.tableWidget_of_orders.cellWidget(i, 3).currentText()))
+                    self.list_of_orders[i].num  # id по которому надо поменять статус в бд
+                    self.tableWidget_of_orders.cellWidget(i, 3).currentText()  # статус
+                else:
+                    self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(
+                    self.list_of_statuses.index("Произвести сборку"))
+                    QMessageBox.critical(self, "Ошибка", "Недостаточно комплектующих\nНе хватает :", QMessageBox.Ok)
         except Exception as ex:
             print(ex)
-                self.list_of_orders[i].num  #id по которому надо поменять статус в бд
-                self.tableWidget_of_orders.cellWidget(i, 3).currentText() #статус
-            else:
-                self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(self.list_of_statuses.index("Произвести сборку"))
-                QMessageBox.critical(self, "Ошибка", "Недостаточно комплектующих\nНе хватает :", QMessageBox.Ok)
-
-
-        print("check")
-        pass
 
     def update_orders(self):  # обновление таблицы заказов
         self.tableWidget_of_orders.setRowCount(len(self.list_of_orders))
         for i in range(len(self.list_of_orders)):
-            combobox = QtWidgets.QComboBox()
-            combobox.addItems(self.list_of_statuses)
+            self.refresh(i)
 
-            self.tableWidget_of_orders.setItem(i, 0, QTableWidgetItem())
-            self.tableWidget_of_orders.setItem(i, 1, QTableWidgetItem())
-            self.tableWidget_of_orders.setItem(i, 2, QTableWidgetItem())
-            self.tableWidget_of_orders.setItem(i, 3, QTableWidgetItem())
-            self.tableWidget_of_orders.setItem(i, 4, QTableWidgetItem())
+    def refresh(self, i):
+        combobox = QtWidgets.QComboBox()
+        combobox.addItems(self.list_of_statuses)
 
-            self.tableWidget_of_orders.item(i, 0).setText(str(self.list_of_orders[i].num))
-            self.tableWidget_of_orders.item(i, 1).setText(
-                time.strftime("%d.%m.%Y", time.gmtime(self.list_of_orders[i].creation_date)))
-            self.tableWidget_of_orders.item(i, 2).setText(
-                time.strftime("%d.%m.%Y", time.gmtime(self.list_of_orders[i].last_change_date)))
+        self.tableWidget_of_orders.setItem(i, 0, QTableWidgetItem())
+        self.tableWidget_of_orders.setItem(i, 1, QTableWidgetItem())
+        self.tableWidget_of_orders.setItem(i, 2, QTableWidgetItem())
+        # self.tableWidget_of_orders.setItem(i, 3, QTableWidgetItem())
+        self.tableWidget_of_orders.setItem(i, 4, QTableWidgetItem())
 
-            self.tableWidget_of_orders.item(i, 4).setText(str(self.list_of_orders[i].price))
+        self.tableWidget_of_orders.item(i, 0).setText(str(self.list_of_orders[i].num))
+        self.tableWidget_of_orders.item(i, 1).setText(
+            time.strftime("%d.%m.%Y", time.gmtime(self.list_of_orders[i].creation_date)))
+        self.tableWidget_of_orders.item(i, 2).setText(
+            time.strftime("%d.%m.%Y", time.gmtime(self.list_of_orders[i].last_change_date)))
 
-            self.tableWidget_of_orders.item(i, 0).setFlags(QtCore.Qt.ItemIsEditable)
-            self.tableWidget_of_orders.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
-            self.tableWidget_of_orders.item(i, 2).setFlags(QtCore.Qt.ItemIsEditable)
-            self.tableWidget_of_orders.item(i, 4).setFlags(QtCore.Qt.ItemIsEditable)
+        self.tableWidget_of_orders.item(i, 4).setText(str(self.list_of_orders[i].price))
 
-            self.tableWidget_of_orders.setCellWidget(i, 3, combobox)
-            self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(
-                self.list_of_statuses.index(self.list_of_orders[i].state))
+        self.tableWidget_of_orders.item(i, 0).setFlags(QtCore.Qt.ItemIsEditable)
+        self.tableWidget_of_orders.item(i, 1).setFlags(QtCore.Qt.ItemIsEditable)
+        self.tableWidget_of_orders.item(i, 2).setFlags(QtCore.Qt.ItemIsEditable)
+        self.tableWidget_of_orders.item(i, 4).setFlags(QtCore.Qt.ItemIsEditable)
 
-            self.tableWidget_of_orders.cellWidget(i, 3).currentTextChanged.connect(lambda: self.status_changed(i))
+        self.tableWidget_of_orders.setCellWidget(i, 3, combobox)
+
+        self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(
+            self.list_of_statuses.index(self.list_of_orders[i].state))
+        self.tableWidget_of_orders.cellWidget(i, 3).currentTextChanged.connect(lambda: self.status_changed(i))
+
 
             # self.tableWidget_of_orders.cellWidget(i, 0).currentTextChanged.connect(
             #     lambda: self.set_price(i, self.tableWidget_order.cellWidget(i, 0).currentText()))
