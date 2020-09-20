@@ -81,7 +81,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.list_of_client_names.append(i[0])
         self.comboBox.addItems(self.list_of_client_names)
 
-        self.list_of_orders = []#[Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"),
+        self.list_of_orders = []  # [Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"),
         #                        Order(2, 1600495329, 1600505329, "Запрошено разрешение у ФСБ", 14000, "Петя",
         #                              licence=False),
         #                        Order(3, 1600405329, 1600405329, "Идет сборка", 14000, "Вася",
@@ -94,10 +94,12 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         for i in self.cur.execute("""select * from applications""").fetchall():
             date_creation = time.strftime("%d.%m.%Y", time.gmtime(i[1]))
             last_change_date = time.strftime("%d.%m.%Y", time.gmtime(i[2]))
-            customer, licence = self.cur.execute("""select title, licence from customers where id = ?""", (i[3],)).fetchall()[0]
-            status = self.cur.execute("""select title from application_status where id = ?""", (i[5],)).fetchall()[0][0]
+            customer, licence = \
+                self.cur.execute("""select title, license from customers where id = ?""", (i[3],)).fetchall()[0]
+            print(i[4])
+            status = self.cur.execute("""select title from application_status where id = ?""", (i[4],)).fetchall()[0][0]
 
-            self.list_of_orders.append(Order(i[0], date_creation, last_change_date, status, i[6], customer, licence))
+            self.list_of_orders.append(Order(i[0], i[1], i[2], status, i[5], customer, licence))
         self.update_orders()
 
         self.t = 1
@@ -121,7 +123,16 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         except Exception as error:
             print(error)
 
-    def status_changed(self, row): # изменение статуса заказа отсылает сюда
+    def status_changed(self, row):  # изменение статуса заказа отсылает сюда
+
+        # передаётся значение только из самой последней строчки
+
+        print(row)
+        print("update customers set status =(select id from application_status where title = {})".format(
+                         self.tableWidget_of_orders.cellWidget(row, 3).currentText()))
+        # self.cur.execute("update customers set status =(select id from application_status where title = {})".format(
+        #                          self.tableWidget_of_orders.cellWidget(row, 3).currentText()))
+
         print("check")
         pass
 
@@ -181,11 +192,32 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
                     self.tableWidget_order.cellWidget(i, 0).currentText()] = self.tableWidget_order.cellWidget(i,
                                                                                                                2).value()
 
-        print(time.time(), client_name, shopping_dict, self.label_price.text(), (not self.radioButton.isChecked()))
+        item_list = [time.time(), client_name, shopping_dict, self.label_price.text(),
+                     self.radioButton.isChecked()]
+        print(item_list)
+        # добавляем заказ в бд
+        
+        # проверка покупателя
+        if item_list[4]:
+            self.cur.execute("insert into customers (title) values ( '{}' )".format(item_list[1]))
+            customer = self.cur.execute("select id from customers where title = ?", (item_list[1],)).fetchall()
+        else:
+            customer = self.cur.execute("""select id from customers where title = ?""", (item_list[1],)).fetchall()
 
-        print(shopping_dict)
+        self.cur.execute(
+            """insert into applications
+             (date_creation, last_change_date, customer, status, total_cost) values (?, ?, ?, 1, ?)""",
+            (item_list[0], item_list[0], customer[0][0], item_list[3]))
 
+        id_application = self.cur.execute("""select id from applications where date_creation = ?""",
+                                          (item_list[0],)).fetchall()
 
+        # # добавление дронов в список покупок
+        for j in item_list[2]:
+            self.cur.execute("""insert into shoping_lists (id, drone, amount) values ( ?, ?, ? )""",
+                             (id_application[0][0], j, item_list[2][j]))
+
+        self.con.commit()
         self.clean_order_table()
         self.update_orders()
         self.swap("")
