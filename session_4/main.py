@@ -12,7 +12,7 @@ def get_seconds(day, month, year):
 
 
 class Order():  # класс в котором хранится информация о заказе(надо расширять)
-    def __init__(self, num, creation_date, last_change_date, state, price, client_name, new_client=False):
+    def __init__(self, num, creation_date, last_change_date, state, price, client_name, licence=True):
         self.num = num  # 1 столбик
         self.creation_date = creation_date
         self.last_change_date = last_change_date
@@ -20,7 +20,7 @@ class Order():  # класс в котором хранится информац
         self.price = price  # столбик
 
         self.client_name = client_name
-        self.new_client = new_client  # bool
+        self.licence = licence  # bool
 
     def get_info_for_orders_table(self):
         return self.num, self.creation_date, self.last_change_date, self.state, self.price
@@ -81,24 +81,23 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             self.list_of_client_names.append(i[0])
         self.comboBox.addItems(self.list_of_client_names)
 
-        self.list_of_orders = [Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"),
-                               Order(2, 1600495329, 1600505329, "Запрошено разрешение у ФСБ", 14000, "Петя",
-                                     new_client=True),
-                               Order(3, 1600405329, 1600405329, "Идет сборка", 14000, "Вася",
-                                     new_client=True),
-                               Order(4, 1600305329, 1600305329, "Анулирована", 14000, "Макс",
-                                     new_client=True),
-                               Order(5, 1600205329, 1600205329, "Готова к отгрузке", 14000, "Слуга народа",
-                                     new_client=True)]  # бд сюда
+        self.list_of_orders = []#[Order(1, 1600501329, 1600105329, "Создана", 12000, "Костя"),
+        #                        Order(2, 1600495329, 1600505329, "Запрошено разрешение у ФСБ", 14000, "Петя",
+        #                              licence=False),
+        #                        Order(3, 1600405329, 1600405329, "Идет сборка", 14000, "Вася",
+        #                              licence=True),
+        #                        Order(4, 1600305329, 1600305329, "Анулирована", 14000, "Макс",
+        #                              licence=False),
+        #                        Order(5, 1600205329, 1600205329, "Готова к отгрузке", 14000, "Слуга народа",
+        #                              licence=True)]  # бд сюда
 
         for i in self.cur.execute("""select * from applications""").fetchall():
             date_creation = time.strftime("%d.%m.%Y", time.gmtime(i[1]))
-            general_status = time.strftime("%d.%m.%Y", time.gmtime(i[2]))
-            customer = self.cur.execute("""select title from customers where id = ?""", (i[3],)).fetchall()[0][0]
+            last_change_date = time.strftime("%d.%m.%Y", time.gmtime(i[2]))
+            customer, licence = self.cur.execute("""select title, licence from customers where id = ?""", (i[3],)).fetchall()[0]
             status = self.cur.execute("""select title from application_status where id = ?""", (i[5],)).fetchall()[0][0]
 
-            self.list_of_orders.append([i[0], date_creation, general_status, customer, status, i[6]])
-
+            self.list_of_orders.append(Order(i[0], date_creation, last_change_date, status, i[6], customer, licence))
         self.update_orders()
 
         self.t = 1
@@ -166,12 +165,27 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         if self.radioButton.isChecked():
             self.list_of_orders.append(
                 Order(3, int(time.time()), int(time.time()), "Запрошено разрешение у ФСБ", self.label_price.text(),
-                      self.lineEdit.text(), new_client=True))
+                      self.lineEdit.text(), licence=False))
+            client_name = self.lineEdit.text()
+
         else:
             self.list_of_orders.append(
                 Order(3, int(time.time()), int(time.time()), "Идет сборка", self.label_price.text(),
                       self.comboBox.currentText()))
-        print([i.get_info_for_orders_table() for i in self.list_of_orders])
+            client_name = self.comboBox.currentText()
+
+        shopping_dict = {}
+        for i in range(self.tableWidget_order.rowCount()):
+            if self.tableWidget_order.cellWidget(i, 0).currentText():
+                shopping_dict[
+                    self.tableWidget_order.cellWidget(i, 0).currentText()] = self.tableWidget_order.cellWidget(i,
+                                                                                                               2).value()
+
+        print(time.time(), client_name, shopping_dict, self.label_price.text(), (not self.radioButton.isChecked()))
+
+        print(shopping_dict)
+
+
         self.clean_order_table()
         self.update_orders()
         self.swap("")
