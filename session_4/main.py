@@ -54,7 +54,7 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
         self.tableWidget_order.setHorizontalHeaderLabels(["Модель", "Цена", "Колличество"])
 
         self.list_of_statuses = ["Создана", "Идет сборка", "Готова к отгрузке", "Запрошено разрешение у ФСБ",
-                                 "Анулирована", "Отгружена"]  # бд сюда
+                                 "Анулирована", "Отгружена", "Произвести сборку"]  # бд сюда
 
         for i in range(3, 5):
             self.tableWidget_of_orders.horizontalHeader().setSectionResizeMode(i, QtWidgets.QHeaderView.Stretch)
@@ -122,11 +122,19 @@ class UI_Session4(QMainWindow, Ui_MainWindow):
             print(error)
 
     def status_changed(self, i): # изменение статуса заказа отсылает сюда
-        self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
+        if self.tableWidget_of_orders.cellWidget(i, 3).currentText() == "Готова к отгрузке":
+            possible = False # possible хватает деталей на сборку
+            if possible: #
+
+                self.list_of_orders[i].state = self.tableWidget_of_orders.cellWidget(i, 3).currentText()
 
 
-        self.list_of_orders[i].num  #id по которому надо поменять статус в бд
-        self.tableWidget_of_orders.cellWidget(i, 3).currentText() #статус
+                self.list_of_orders[i].num  #id по которому надо поменять статус в бд
+                self.tableWidget_of_orders.cellWidget(i, 3).currentText() #статус
+            else:
+                self.tableWidget_of_orders.cellWidget(i, 3).setCurrentIndex(self.list_of_statuses.index("Произвести сборку"))
+                QMessageBox.critical(self, "Ошибка", "Недостаточно комплектующих\nНе хватает :", QMessageBox.Ok)
+
 
         print("check")
         pass
