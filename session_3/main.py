@@ -30,6 +30,8 @@ class UI_Session3(QtWidgets.QDialog, Ui_Dialog):
         self.dateEdit.setTimeSpec(QtCore.Qt.LocalTime)
         self.dateEdit.setGeometry(QtCore.QRect(220, 120, 133, 30))
 
+        self.dateEdit.setDate(QtCore.QDate.currentDate())
+
         ######################
 
         # Заполняем таблицу
