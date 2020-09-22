@@ -11,7 +11,7 @@ def get_seconds(day, month, year):
     return time.mktime((year, month, day, 23, 59, 59, 0, 0, 0))
 
 
-class Order():  # класс в котором хранится информация о заказе(надо расширять)
+class Order:  # класс в котором хранится информация о заказе(надо расширять)
     def __init__(self, num, creation_date, last_change_date, state, price, client_name, licence=True):
         self.num = num  # 1 столбик
         self.creation_date = creation_date
