@@ -75,6 +75,7 @@ class UI_Session6(QMainWindow, Ui_MainWindow):
         print(date)
         print(amount)
         print((int(second - first) // 3600 // 24))
+        self.pyqtgraph.clear()
         self.pyqtgraph.plot(date, amount, pen=self.pen)
 
         #достать из бд все (first <= АКБ <= second)
